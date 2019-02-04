@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl,FormGroup, Validators, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-list',
@@ -6,34 +7,69 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['list.page.scss']
 })
 export class ListPage implements OnInit {
-  private selectedItem: any;
-  private icons = [
-    'flask',
-    'wifi',
-    'beer',
-    'football',
-    'basketball',
-    'paper-plane',
-    'american-football',
-    'boat',
-    'bluetooth',
-    'build'
-  ];
-  public items: Array<{ title: string; note: string; icon: string }> = [];
+  pageItems:Array<string> = [];
+  items:Array<string>;
+  searchTerm:string;
+  searching:boolean = false;
+  searchControl:FormControl;
+
   constructor() {
-    for (let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
-        icon: this.icons[Math.floor(Math.random() * this.icons.length)]
-      });
-    }
+    this.items = [
+      'banana',
+      'apple',
+      'pineapple',
+      'durian',
+      'blueberry',
+      'papaya',
+      'yam',
+      'quince',
+      'ximenia'
+    ];
+    this.searchInput = new FormControl();
+    this.items.forEach( (item) => {
+      this.pageItems.push(item);
+    });
   }
 
   ngOnInit() {
+    this.searchInput.valueChanges.subscribe( (search) => {
+      console.log(search);
+      this.searching = false;
+      // this.restoreList();
+        this.searchTerm = search;
+        this.filterItems( search );
+    });
   }
-  // add back when alpha.4 is out
-  // navigate(item) {
-  //   this.router.navigate(['/list', JSON.stringify(item)]);
-  // }
+
+  filterItems( searchTerm ){
+    this.searching = true;
+    if( searchTerm.length > 0 ){
+      this.pageItems.forEach( (pageItem, index) => {
+        if( pageItem.indexOf( searchTerm ) == -1 ){
+          this.pageItems.splice(index,1);
+        }
+      });
+    }
+    else{
+      this.searching = false;
+      console.log(this.items);
+      this.restoreList();
+      // this.pageItems = [];
+      // this.items.forEach((item) => {
+      //   this.pageItems.push(item);
+      // });
+    }
+  }
+  cancelSearch(){
+    this.searching = false;
+    //this.pageItems = this.items;
+  }
+  restoreList(){
+    //this.pageItems = this.items;
+    console.log(this.items);
+    this.pageItems = [];
+    this.items.forEach( (item) => {
+      this.pageItems.push(item);
+    });
+  }
 }
